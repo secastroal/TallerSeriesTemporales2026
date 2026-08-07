@@ -1,0 +1,1 @@
+# TallerSeriesTemporales2026
