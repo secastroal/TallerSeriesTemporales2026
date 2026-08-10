@@ -1,0 +1,154 @@
+---
+title: "No Nos Bañamos Dos Veces en el Mismo Río: Introducción al Análisis de Procesos Psicológicos a Través del Tiempo - Guīa prática - Dīa 1"
+date: 10-08-2026
+author: 
+  name: Sebastian Castro-Alvarez
+  orcid: 0000-0002-1326-0827
+  email: s.castro.alvarez@rug.nl
+  affiliation: 
+    name: University of Groningen
+fig-cap-location: top
+format: pdf
+editor: source
+markdown:
+  wrap: 72
+execute:
+  echo: true
+  eval: false
+bibliography: references.bib
+csl: apa7.csl
+---
+
+<!-- quarto::quarto_render("practical.qmd") -->
+
+# Guía práctica — Día 1
+
+## Introducción
+
+En este taller exploraremos cómo podemos estudiar procesos psicológicos a través del tiempo utilizando datos longitudinales intensivos. Durante el primer día trabajaremos primero con la estructura y las características de los datos y, posteriormente, analizaremos la serie temporal de una persona utilizando modelos autorregresivos.
+
+Esta guía está dividida en dos partes:
+
+1. **Exploración de los datos:** conocer la estructura de los datos y explorar la variabilidad entre y dentro de las personas.
+2. **Análisis de una serie temporal:** trabajar con los datos de una persona y utilizar un modelo AR(1) para estudiar la dependencia temporal.
+
+## Preparación
+
+Para acceder a los datos utilizaremos el paquete `openesm`.
+
+Si todavía no lo tienes instalado, puedes hacerlo con:
+
+```{r}
+install.packages("openesm")
+```
+
+Carga el paquete:
+
+```{r}
+library(openesm)
+```
+
+También utilizaremos el paquete `forecast` durante la segunda parte:
+
+```{r}
+install.packages("forecast")
+library(forecast)
+```
+
+Descargar los datos
+
+Los datos que utilizaremos corresponden al estudio de @Grommisch2020 y están disponibles en el paquete `openesm`.
+
+Puedes descargar los datos directamente desde R utilizando:
+
+```{r}
+datos <- get_dataset("0032_grommisch")
+```
+
+Este objeto es de hecho una lista incluyendo los datos, indetificadores y metadata. Para acceder a los datos directamente, se puede sobrescribir `datos` asī:
+
+```{r}
+datos <- datos$data
+```
+Explora el objeto datos para identificar dónde se encuentran los datos que utilizaremos.
+
+# Parte 1 — Exploración de los datos
+
+1. Calcula el número de personas que participan en el estudio.
+
+::: callout-tip
+Puedes utilizar `unique()` y `length()`.
+:::
+
+2. Calcula cuántas observaciones tiene cada persona y explora su distribución.
+
+::: callout-tip
+Puedes utilizar `table()` o `tapply()`.
+:::
+
+3. Calcula las medias y las varianzas intraindividuales de una de las variables psicológicas de los datos y grafica su distribución.
+
+::: callout-tip
+Para calcular estadísticas por persona puedes utilizar `tapply()`.
+:::
+
+4. Selecciona una persona con suficientes observaciones para trabajar con ella durante el resto de la guía. Crea un nuevo objeto que contenga únicamente las observaciones de esta persona.
+
+5. Selecciona una de las variables psicológicas y grafica sus valores a través del tiempo para la persona seleccionada.
+
+::: callout-tip
+Puedes utilizar `ts.plot()` que es especializada para graficar series temporales.
+:::
+
+6. Grafica la distribución de las respuestas de la variable que seleccionaste.
+
+
+7. Calcula manualmente la autocorrelación de primer orden.
+
+::: callout-tip
+Para hacerlo:
+
+Crea una variable rezagada (lagged variable).
+Correlaciona la variable original con la variable rezagada.
+Interpreta el resultado.
+:::
+
+# Parte 2 — Análisis de una serie temporal: AR(1)
+
+Para esta parte continúa trabajando con la serie temporal de la persona que seleccionaste en la Parte 1.
+
+1. Calcula una media móvil (moving average) para explorar cambios lentos en la serie. Grafica la serie original junto con la media móvil.
+
+::: callout-tip
+Puedes utilizar la función `ma()` del paquete `forecast`.
+:::
+
+2. Utiliza la media móvil para obtener una versión de la serie en la que se haya eliminado la tendencia. Grafica la nueva serie y compárala con la serie original.
+
+3. Descompón la serie temporal en sus componentes: Estacional, de tendencia y residual.
+
+::: callout-tip
+Puedes utilizar la función `decompose()`.
+:::
+
+4. Calcula y grafica la función de autocorrelación (ACF) y la función de autocorrelación parcial (PACF).
+
+::: callout-tip
+Puedes utilizar las funciones acf() y pacf().
+:::
+
+5. Ajusta un modelo AR(1) a la serie temporal.
+
+::: callout-tip
+Puedes utilizar `arima()` con `order = c(1, 0, 0)` o la función `ar()`.
+:::
+
+6. Examina los residuos del modelo AR(1). Grafica los residuos y calcula su ACF.
+
+::: callout-tip
+Puedes obtener los residuos utilizando residuals().
+:::
+
+{{< pagebreak >}}
+
+# References
