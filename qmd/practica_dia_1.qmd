@@ -1,5 +1,5 @@
 ---
-title: "No Nos Bañamos Dos Veces en el Mismo Río: Introducción al Análisis de Procesos Psicológicos a Través del Tiempo - Guīa prática - Dīa 1"
+title: "No Nos Bañamos Dos Veces en el Mismo Río: Introducción al Análisis de Procesos Psicológicos a Través del Tiempo - Guīa prática - Día 1"
 date: 10-08-2026
 author: 
   name: Sebastian Castro-Alvarez
@@ -19,7 +19,7 @@ bibliography: references.bib
 csl: apa7.csl
 ---
 
-<!-- quarto::quarto_render("practical.qmd") -->
+<!-- quarto::quarto_render("qmd/practica_dia_1.qmd", output_file = "Practica_dia_1.pdf") -->
 
 # Guía práctica — Día 1
 

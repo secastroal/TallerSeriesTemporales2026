@@ -1,6 +1,6 @@
 ---
-title: "No Nos Bañamos Dos Veces en el Mismo Río: Introducción al Análisis de Procesos Psicológicos a Través del Tiempo - Guīa prática - Dīa 1"
-date: 10-08-2026
+title: "No Nos Bañamos Dos Veces en el Mismo Río: Introducción al Análisis de Procesos Psicológicos a Través del Tiempo - Guīa prática - Día 2"
+date: 11-08-2026
 author: 
   name: Sebastian Castro-Alvarez
   orcid: 0000-0002-1326-0827
@@ -19,134 +19,101 @@ bibliography: references.bib
 csl: apa7.csl
 ---
 
-<!-- quarto::quarto_render("practical.qmd") -->
+<!-- quarto::quarto_render("qmd/practica_dia_2.qmd", output_file = "Practica_dia_2.pdf") -->
 
-# Guía práctica — Día 1
+# Guía práctica — Día 2
 
 ## Introducción
 
-En este taller exploraremos cómo podemos estudiar procesos psicológicos a través del tiempo utilizando datos longitudinales intensivos. Durante el primer día trabajaremos primero con la estructura y las características de los datos y, posteriormente, analizaremos la serie temporal de una persona utilizando modelos autorregresivos.
+Durante el segundo día continuaremos trabajando con los datos longitudinales intensivos del estudio de @Grommisch2020. Primero pasaremos de analizar la dinámica temporal de una persona a estudiar la dinámica de muchas personas y las relaciones entre varias variables. Después exploraremos diferentes formas de estimar la confiabilidad de medidas repetidas.
 
 Esta guía está dividida en dos partes:
 
-1. **Exploración de los datos:** conocer la estructura de los datos y explorar la variabilidad entre y dentro de las personas.
-2. **Análisis de una serie temporal:** trabajar con los datos de una persona y utilizar un modelo AR(1) para estudiar la dependencia temporal.
+1. **Modelando muchas personas:** trabajar con modelos AR y VAR a nivel individual y multinivel.
+2. **Confiabilidad en datos longitudinales:** estimar la confiabilidad de datos longitudinales intensivos con diferentes métodos.
 
 ## Preparación
 
-Para acceder a los datos utilizaremos el paquete `openesm`.
-
-Si todavía no lo tienes instalado, puedes hacerlo con:
-
-```{r}
-install.packages("openesm")
-```
-
-Carga el paquete:
+Continuaremos utilizando los datos del estudio de @Grommisch2020.
 
 ```{r}
 library(openesm)
-```
 
-También utilizaremos el paquete `forecast` durante la segunda parte:
-
-```{r}
-install.packages("forecast")
-library(forecast)
-```
-
-Descargar los datos
-
-Los datos que utilizaremos corresponden al estudio de @Grommisch2020 y están disponibles en el paquete `openesm`.
-
-Puedes descargar los datos directamente desde R utilizando:
-
-```{r}
 datos <- get_dataset("0032_grommisch")
-```
-
-Este objeto es de hecho una lista incluyendo los datos, indetificadores y metadata. Para acceder a los datos directamente, se puede sobrescribir `datos` asī:
-
-```{r}
 datos <- datos$data
 ```
-Explora el objeto datos para identificar dónde se encuentran los datos que utilizaremos.
 
-# Parte 1 — Exploración de los datos
+También vamos a extraer de una vez los datos del participante con `id == 6008947`, que es quien respondió el cuestionario más veces. 
 
-1. Calcula el número de personas que participan en el estudio.
+```{r}
+data_p <- data[data$id == "6008947",]
+```
+
+También utilizaremos los siguientes paquetes:
+
+```{r}
+install.packages("psych", "misty", "graphicalVAR", "mlVAR")
+
+library(mlVAR)
+library(graphicalVAR)
+library(psych)
+library(misty)
+```
+
+# Parte 3 — ¿Cómo modelar muchas personas?
+
+1. Selecciona una de las variables psicológicas y ajusta un modelo AR(1) para cada persona. Extrae en un vector el coeficiente autorregresivo de cada modelo y explora su distribución.
 
 ::: callout-tip
-Puedes utilizar `unique()` y `length()`.
+Similar al día de ayer se puede utilizar la función `ar()` o `arima` para estimar el modelo. Para ejecutarlo de manera automática a cada sujeto se puede hacer un `for loop` o se puede utilizar `tapply()`.
 :::
 
-2. Calcula cuántas observaciones tiene cada persona y explora su distribución.
+2. Ajusta un modelo ML-AR(1) utilizando la misma variable y todos los participantes. Revisa los resultados y extrae los coeficientes autoregressivos por persona.
 
 ::: callout-tip
-Puedes utilizar `table()` o `tapply()`.
+Puedes utilizar `mlVAR0()` con lags = 1. Para extraer los efectos aleatorios `randomEffects()`.
 :::
 
-3. Calcula las medias y las varianzas intraindividuales de una de las variables psicológicas de los datos y grafica su distribución.
+3. Compara los coeficientes autorregresivos individuales con el coeficiente obtenido mediante ML-AR(1) por medio de una gráfica.
+
+4. Con los datos de la persona seleccionada, ajusta un VAR(1) y grafica la red temporal.
 
 ::: callout-tip
-Para calcular estadísticas por persona puedes utilizar `tapply()`.
+Para una sola persona puedes utilizar `graphicalVAR()`. El objeto de esta función se puede graficar directamente usando `plot()`.
 :::
 
-4. Selecciona una persona con suficientes observaciones para trabajar con ella durante el resto de la guía. Crea un nuevo objeto que contenga únicamente las observaciones de esta persona.
-
-5. Selecciona una de las variables psicológicas y grafica sus valores a través del tiempo para la persona seleccionada.
+5. Ajusta un ML-VAR(1) utilizando los datos completos. Grafica la red temporal y explora sus resultados.
 
 ::: callout-tip
-Puedes utilizar `ts.plot()` que es especializada para graficar series temporales.
+Puedes utilizar `mlVAR()` y similarmente el objeto de esta función se puede graficar directamente con `plot()`.
 :::
 
-6. Grafica la distribución de las respuestas de la variable que seleccionaste.
+# Parte 4 — ¿Qué tan confiables son nuestras medidas?
 
+Para esta parte selecciona los tres ítems de afecto positivo o los tres ítems de afecto negativo.
 
-7. Calcula manualmente la autocorrelación de primer orden.
+1. Calcula la confiabilidad de acuerdo con la teoría de la generalizabilidad.
 
 ::: callout-tip
-Para hacerlo:
-
-Crea una variable rezagada (lagged variable).
-Correlaciona la variable original con la variable rezagada.
-Interpreta el resultado.
+Puedes utilizar mlr() del paquete psych.
 :::
 
-# Parte 2 — Análisis de una serie temporal: AR(1)
-
-Para esta parte continúa trabajando con la serie temporal de la persona que seleccionaste en la Parte 1.
-
-1. Calcula una media móvil (moving average) para explorar cambios lentos en la serie. Grafica la serie original junto con la media móvil.
+2. Calcula la confiabilidad utilizando el modelo multinivel propuesto por Nezlek.
 
 ::: callout-tip
-Puedes utilizar la función `ma()` del paquete `forecast`.
+Puedes utilizar mlr() del paquete psych.
 :::
 
-2. Utiliza la media móvil para obtener una versión de la serie en la que se haya eliminado la tendencia. Grafica la nueva serie y compárala con la serie original.
-
-3. Descompón la serie temporal en sus componentes: Estacional, de tendencia y residual.
+3. Calcula el multilevel omega utilizando el modelo CFA multinivel.
 
 ::: callout-tip
-Puedes utilizar la función `decompose()`.
+Puedes utilizar multilevel.omega() del paquete misty.
 :::
 
-4. Calcula y grafica la función de autocorrelación (ACF) y la función de autocorrelación parcial (PACF).
+4. Calcula el coeficiente de omega por persona utilizando p-technique.
 
 ::: callout-tip
-Puedes utilizar las funciones acf() y pacf().
-:::
-
-5. Ajusta un modelo AR(1) a la serie temporal.
-
-::: callout-tip
-Puedes utilizar `arima()` con `order = c(1, 0, 0)` o la función `ar()`.
-:::
-
-6. Examina los residuos del modelo AR(1). Grafica los residuos y calcula su ACF.
-
-::: callout-tip
-Puedes obtener los residuos utilizando residuals().
+Se puede o hacer un loop y ajustar el modelo en `lavaan` o utilizar la función personalizada `esm_pfa_omega()` que se puede cargar al entorno con `source("R/aux_pfa.R")`
 :::
 
 {{< pagebreak >}}
